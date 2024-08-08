@@ -10,32 +10,25 @@ const Container = styled.div`
     display: ${props => (props.hidden ? 'none' : 'block')};
 `
 
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: white;
-  padding: 5px;
-`;
-
-export function Game(){
+export function Game3(){
     const [hiddenGame, sethiddenGame] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
         // 현재 URL 경로 확인
-        if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/logout') {
-            sethiddenGame(true);
-        } else {
+        if (location.pathname === '/') {
             sethiddenGame(false);
+        } else {
+            sethiddenGame(true);
         }
     }, [location.pathname]);
 
     return <>
         <Container hidden={hiddenGame}>
-            <StyledLink to='/feed'>Feed</StyledLink>
-            <StyledLink to='/lecture'>Lecture</StyledLink>
-            <StyledLink to='/teacher'>Teacher</StyledLink>
-            <StyledLink to='/teacher/search'>TeacherSearch</StyledLink>
-            <StyledLink to='/record'>Record</StyledLink>
+            <Link to='/feed'>Feed</Link>
+            <Link to='/lecture'>Lecture</Link>
+            <Link to='/teacher'>Teacher</Link>
+            <Link to='/record'>Record</Link>
         </Container>
     </>
 }

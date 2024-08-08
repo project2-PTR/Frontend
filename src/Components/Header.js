@@ -14,13 +14,12 @@ const Container = styled.div`
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
-  font-size: ${props => props.fontstyle};
 `
 
 export function Header(){
     return<>
         <Container>
-            <StyledLink to='/' fontstyle="30px">PTR</StyledLink>
+            <StyledLink to='/' style={{ fontWeight: 'bold', fontSize: '30px' }}>PTR</StyledLink>
             <Login/>
         </Container>
     </>
@@ -28,7 +27,7 @@ export function Header(){
 
 function Login(){
     return <>
-        <StyledLink to='/login' fontstyle="20px">로그인 / 회원가입</StyledLink>
+        <StyledLink to='/login' style={{ fontSize: '20px' }}>로그인 / 회원가입</StyledLink>
         {/* <StyledLink to='/logout' fontstyle="20px">로그아웃</StyledLink> */}
     </>
 }

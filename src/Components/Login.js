@@ -1,12 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
-
-const Title = styled.div`
-    font-size: 50px;
-    padding-top: 100px;
-    padding-bottom: 80px;
-    text-align: center;
-`
+import { Title } from "./Styles"
 
 const Flex = styled.div`
     display: flex;
