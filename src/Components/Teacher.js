@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { PopupContainer } from "./PopupContainer";
-import { ScrollableContent, Title } from "./Styles";
+import { ScrollableContent } from "./Styles";
+import { LectureContainer } from "./LectureContainer";
 
 const TeacherBarContainer = styled.div`
     display: flex;
@@ -8,12 +9,12 @@ const TeacherBarContainer = styled.div`
     align-items: center;
     margin: 5px;
     justify-content: space-between;
-    cursor: pointer;
     margin-bottom: 30px;
 `
 const TeacherImg = styled.img`
     width: 150px;
     height: 150px;
+    border-radius: 5px;
 `
 const FlexColumn = styled.div`
     display: flex;
@@ -42,12 +43,39 @@ const SubBtn = styled.div`
     color: white;
     border-radius: 5px;
     text-align: center;
+    cursor: pointer;
+`
+
+const SearchBox = styled.div`
+    display: flex;
+    gap: 5px;
+    width: 90%;
+    margin: auto auto -1px auto;
+    padding: 5px;
+    border: 1px solid #ccc;
+`
+
+const Input = styled.input`
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 15px;
+    color: black;
+    flex: 1;
+    padding-left: 10px;
+`
+
+const SearchBtn = styled.div`
+    font-size: 15px;
+    padding: 5px 10px;
+    background-color: #041346;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
 `
 
 export function Teacher(){
     return <>
         <PopupContainer>
-            {/* <Title style={{padding:'30px'}}>Teacher</Title> */}
             <TeacherBarContainer>
                 <Flex>
                     <TeacherImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg"/>
@@ -61,6 +89,10 @@ export function Teacher(){
                 </Flex>
                 <SubBtn>구독</SubBtn>
             </TeacherBarContainer>
+            <SearchBox>
+                <Input type="text" placeholder="영상 이름을 입력하시오."/>
+                <SearchBtn>검색</SearchBtn>
+            </SearchBox>
             <ScrollableContent height="500px" width="90%">
                 <TeacherLecture>{}</TeacherLecture>
             </ScrollableContent>
@@ -71,56 +103,13 @@ export function Teacher(){
 const LectureBox = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 10px;
+    gap: 15px;
+    padding: 10px;
 `
-const LectureContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-`
-const LectureImg = styled.img`
-    width: 100%;
-    aspect-ratio: 1 / 1; /* 1:1 비율로 유지 */
-    height: auto; /* 자동으로 높이 조정 */
-`
-const LectureDetail = styled.div`
-    background-color: gray;
-    padding: 5px;
-`
-const LectureTitle = styled.div`
-    font-size: 20px;
-`
-const LectureFlex = styled.div`
-    display: flex;
-    justify-content: space-between;
-`
-const LectureBuyNum = styled.div`
-    font-size: 15px;
-`
-const LecturePrice = styled.div`
-    font-size: 15px;
-`
-
 function TeacherLecture(object){
     return <LectureBox>
-        <LectureContainer>
-            <LectureImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg"></LectureImg>
-            <LectureDetail>
-                <LectureTitle>스트레칭 영상입니다.</LectureTitle>
-                <LectureFlex>
-                    <LectureBuyNum>조회수 30</LectureBuyNum>
-                    <LecturePrice>단백질바 3개</LecturePrice>
-                </LectureFlex>
-            </LectureDetail>
-        </LectureContainer>
-        <LectureContainer>
-            <LectureImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg"></LectureImg>
-            <LectureDetail>
-                <LectureTitle>스트레칭 영상입니다.</LectureTitle>
-                <LectureFlex>
-                    <LectureBuyNum>조회수 30</LectureBuyNum>
-                    <LecturePrice>단백질바 3개</LecturePrice>
-                </LectureFlex>
-            </LectureDetail>
-        </LectureContainer>
+        <LectureContainer/>
+        <LectureContainer/>
+        <LectureContainer/>
     </LectureBox>
 }

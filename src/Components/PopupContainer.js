@@ -1,6 +1,8 @@
-import { useEffect, useRef } from "react"; // useRef 추가
-import { useNavigate } from "react-router-dom"; // useNavigate 추가
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import backBtn from "./../img/BackButton.png"; // 이미지 파일 import
+import closeBtn from "./../img/closeButton.png"; // 이미지 파일 import
 
 const Popup = styled.div`
     position: absolute;
@@ -13,9 +15,39 @@ const Popup = styled.div`
     z-index: 10; /* 팝업이 다른 요소 위에 나타나게 하기 위한 설정 */
     color: black;
     width: 1200px;
-`;
+`
 
-export function PopupContainer({ children }) {
+const Back = styled.div`
+    position: absolute; /* 절대 위치로 설정 */
+    top: 100px; /* 상단에 붙이기 위해 0으로 설정 */
+    left: calc(50% - 620px - 100px); /* Div의 왼쪽에 딱 붙도록 위치 설정 */
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    display: flex; /* 중앙 정렬을 위한 flex 설정 */
+    flex-direction: column;
+    align-items: center; /* 세로 가운데 정렬 */
+    justify-content: center; /* 가로 가운데 정렬 */
+    padding: 10px;
+    cursor: pointer;
+`
+
+const CloseBtn = styled.div`
+    position: absolute; /* 절대 위치로 설정 */
+    top: 100px; /* 상단에 붙이기 위해 0으로 설정 */
+    left: calc(50% + 620px); /* Div의 오른쪽에 붙도록 위치 설정 */
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    display: flex; /* 중앙 정렬을 위한 flex 설정 */
+    flex-direction: column;
+    align-items: center; /* 세로 가운데 정렬 */
+    justify-content: center; /* 가로 가운데 정렬 */
+    padding: 10px;
+    cursor: pointer;
+`
+
+export function PopupContainer({ back, children }) {
     const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
     const popupRef = useRef(null); // 팝업 요소를 참조하기 위한 ref
 
@@ -27,18 +59,27 @@ export function PopupContainer({ children }) {
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside); // mousedown 이벤트 리스너 등록
+        document.addEventListener("dblclick", handleClickOutside); // mousedown 이벤트 리스너 등록
 
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside); // 언마운트 시 리스너 제거
+            document.removeEventListener("dblclick", handleClickOutside); // 언마운트 시 리스너 제거
         };
     }, [navigate]);
 
-    return (
-        <>
-            <Popup ref={popupRef}>
-                { children }
-            </Popup>
-        </>
-    );
+    return <>
+        {back? 
+            <Back>
+                <img src={backBtn} style={{width:"80%"}}></img>
+                <div style={{color: "black"}}>뒤로가기</div>
+            </Back> : null
+        }
+        
+        <Popup ref={popupRef}>
+            { children }
+        </Popup>
+        <CloseBtn onClick={() => navigate('/')}>
+            <img src={closeBtn} style={{width:"80%"}}></img>
+            <div style={{color: "black"}}>닫기</div>
+        </CloseBtn>
+    </>
 }

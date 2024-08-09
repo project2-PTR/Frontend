@@ -9,8 +9,10 @@ import { Feed } from "./Feed";
 import { Lecture } from "./Lecture";
 import { Teacher } from "./Teacher";
 import { Record } from "./Record";
-import { Game2 } from "./Game2";
 import { TeacherSearch } from "./TeacherSearch";
+import { LectureBuy } from "./LectureBuy";
+import { LectureSearch } from "./LectureSearch";
+import { LectureScrap } from "./LectureScrap";
 
 export function ReactRouter() {
   return <>
@@ -24,6 +26,9 @@ export function ReactRouter() {
         <Route path='/logout' element={<Logout/>}></Route>
         <Route path='/feed' element={<Feed/>}></Route>
         <Route path='/lecture' element={<Lecture/>}></Route>
+        <Route path='/lecture/search' element={<LectureSearch/>}></Route>
+        <Route path='/lecture/buy' element={<LectureBuy/>}></Route>
+        <Route path='/lecture/scrap' element={<LectureScrap/>}></Route>
         <Route path='/teacher/search' element={<TeacherSearch/>}></Route>
         <Route path='/record' element={<Record/>}></Route>
         <Route path='/teacher' element={<Teacher/>}></Route>

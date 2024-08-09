@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { PopupContainer } from "./PopupContainer";
 import { ScrollableContent, Title } from "./Styles";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const SearchBox = styled.div`
     display: flex;
@@ -27,28 +29,46 @@ const SearchBtn = styled.div`
 `
 
 export function TeacherSearch(){
+    const [TeacherList, setTeacherList] = useState(null);
+
+    useEffect(()=>{
+        allTeacherGet();
+    }, [])   // 최초 1회만 실행
+
+    async function allTeacherGet(){
+        try{
+            const response = await axios.get("http://localhost:8080/api/teacher");
+            console.log(response.data);
+            setTeacherList(response.data);
+        }catch(error){
+            console.log("error", error);
+        }
+    }
+
     return <>
         <PopupContainer>
-            <Title style={{padding:'30px'}}>강사 검색</Title>
-            <SearchBox>
-                <Input type="text" placeholder="강사 이름을 입력하시오."/>
-                <SearchBtn>검색</SearchBtn>
-            </SearchBox>
-            <ScrollableContent height="500px" width="100%">
-                <TeacherBar>{}</TeacherBar>
-                <TeacherBar>{}</TeacherBar>
-                <TeacherBar>{}</TeacherBar>
-                <TeacherBar>{}</TeacherBar>
-                <TeacherBar>{}</TeacherBar>
-                <TeacherBar>{}</TeacherBar>
-            </ScrollableContent>
+            <div style={{padding: '0 50px'}}>
+                <Title style={{padding:'30px 0px 30px 0px'}}>강사 검색</Title>
+                <SearchBox>
+                    <Input type="text" placeholder="강사 이름을 입력하시오."/>
+                    <SearchBtn>검색</SearchBtn>
+                </SearchBox>
+                <ScrollableContent height="500px" width="100%">
+                    <TeacherBar>{}</TeacherBar>
+                    <TeacherBar>{}</TeacherBar>
+                    <TeacherBar>{}</TeacherBar>
+                    <TeacherBar>{}</TeacherBar>
+                    <TeacherBar>{}</TeacherBar>
+                    <TeacherBar>{}</TeacherBar>
+                </ScrollableContent>
+            </div>
         </PopupContainer>
     </>
 }
 
 const TeacherBarContainer = styled.div`
     display: flex;
-    padding: 10px 20px;
+    padding: 10px 30px;
     background-color: #D9D9D9;
     border-radius: 5px;
     align-items: center;
@@ -64,6 +84,7 @@ const FlexColumn = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-left: 15px;
 `
 const Flex = styled.div`
     display: flex;
@@ -75,8 +96,13 @@ const TeacherName = styled.div`
     font-weight: bold;
 `
 const SubNum = styled.div``
+const LectureNum = styled.div``
+const Date = styled.div`
+    color: #666;
+    font-size: 15px;
+`
 const TeacherProfile = styled.div`
-    
+    margin-top: 5px;
 `
 const SubBtn = styled.div`
     font-size: 15px;
@@ -95,7 +121,9 @@ function TeacherBar(object){
                 <FlexColumn>
                     <Flex>
                         <TeacherName>Steve</TeacherName>
-                        <SubNum>구독자수 10명</SubNum>
+                        <SubNum> | 구독자수 10명</SubNum>
+                        <LectureNum> - 영상수 10개</LectureNum>
+                        <Date>2020.01.01 가입</Date>
                     </Flex>
                     <TeacherProfile>안녕하세요. 스티브입니다.</TeacherProfile>
                 </FlexColumn>
