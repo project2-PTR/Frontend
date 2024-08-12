@@ -53,11 +53,14 @@ export function LectureContainer(data){
     const [buynum, setBuynum] = useState(0);
 
     useEffect(() => {
-        buyNumber()
-        userScrap()
-    }, []);
+        if (sessionUser) {
+            buyNumber();
+            userScrap();
+        }
+    }, [sessionUser]);
 
     const lecture = data.lecture;
+    console.log(sessionUser)
 
     async function buyNumber(){
         try{

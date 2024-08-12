@@ -2,6 +2,9 @@ import styled from "styled-components";
 import { PopupContainer } from "./PopupContainer";
 import { ScrollableContent, Title } from "./Styles";
 import { LectureContainer } from "./LectureContainer";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { SessionCurrent } from "./SessionCurrent";
 
 const SearchBox = styled.div`
     display: flex;
@@ -31,6 +34,26 @@ const SearchBtn = styled.div`
 `
 
 export function LectureBuy(){
+    const { sessionUser } = SessionCurrent();
+    const [lectureList, setLectureList] = useState(null);
+
+    useEffect(() => {
+        if (sessionUser) {
+            myBuyLecture();
+        }
+    }, [sessionUser]);
+
+    async function myBuyLecture(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/myBuyLecture", {userId: sessionUser});
+            const data = response.data;
+            console.log(data);
+            setLectureList(data);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
         <PopupContainer>
             
@@ -40,7 +63,7 @@ export function LectureBuy(){
                 <SearchBtn>검색</SearchBtn>
             </SearchBox>
             <ScrollableContent height="500px" width="90%">
-                <TeacherLecture>{}</TeacherLecture>
+                {lectureList!=null? <TeacherLecture lectureList={lectureList} />: null}
             </ScrollableContent>
         </PopupContainer>
     </>
@@ -53,14 +76,12 @@ const LectureBox = styled.div`
     padding: 10px;
 `
 
-function TeacherLecture(object){
+function TeacherLecture( {lectureList} ){
     return <LectureBox>
-        <LectureContainer/>
-        <LectureContainer/>
-        <LectureContainer/>
-        <LectureContainer/>
-        <LectureContainer/>
-        <LectureContainer/>
-        <LectureContainer/>
+        {
+          lectureList && lectureList.map((lecture)=>(
+            <LectureContainer key={lecture.id} lecture={lecture}/>
+          ))
+        }
     </LectureBox>
 }
