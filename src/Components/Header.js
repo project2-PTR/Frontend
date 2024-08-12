@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import styled from "styled-components"
+import { SessionCurrent } from "./SessionCurrent"
 
 const Container = styled.div`
     display: flex;
@@ -26,8 +27,12 @@ export function Header(){
 }
 
 function Login(){
+    const { sessionUser } = SessionCurrent();
+
     return <>
-        <StyledLink to='/login' style={{ fontSize: '20px' }}>로그인 / 회원가입</StyledLink>
-        {/* <StyledLink to='/logout' fontstyle="20px">로그아웃</StyledLink> */}
+        {sessionUser=="anonymousUser" || sessionUser==null?
+            <StyledLink to='/login' style={{ fontSize: '20px' }}>로그인 / 회원가입</StyledLink>:
+            <StyledLink to='/logout' style={{ fontstyle: "20px" }}>로그아웃</StyledLink>
+        }
     </>
 }

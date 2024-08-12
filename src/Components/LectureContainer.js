@@ -1,6 +1,9 @@
 import styled from "styled-components"
 import bookmark from "./../img/bookmark2.png";
 import bookmarkcheck from "./../img/bookmark2check.png";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { SessionCurrent } from "./SessionCurrent";
 
 const LectureBox = styled.div`
     display: flex;
@@ -45,7 +48,39 @@ const LecturePrice = styled.div`
     font-size: 15px;
 `
 
-export function LectureContainer(object){
+export function LectureContainer(data){
+    const { sessionUser } = SessionCurrent();
+    const [buynum, setBuynum] = useState(0);
+
+    useEffect(() => {
+        buyNumber()
+        userScrap()
+    }, []);
+
+    const lecture = data.lecture;
+
+    async function buyNumber(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/buyNumber", {id: lecture.id});
+            const data = response.data;
+            setBuynum(data);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
+
+    
+    async function userScrap(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/findScrapLectureByUserAndLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
+            const data = response.data;
+            console.log(data);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    
     return <>
         <LectureBox>
             <div style={{display:'flex'}}>
@@ -53,10 +88,10 @@ export function LectureContainer(object){
                 <Div><img src={bookmark} style={{width:'100%'}}/></Div>
             </div>
             <LectureDetail>
-                <LectureTitle>스트레칭 영상입니다.</LectureTitle>
+                <LectureTitle>{lecture.lectureName}</LectureTitle>
                 <LectureFlex>
-                    <LectureBuyNum>구매수 30</LectureBuyNum>
-                    <LecturePrice>단백질바 3개</LecturePrice>
+                    <LectureBuyNum>구매수 {buynum}</LectureBuyNum>
+                    <LecturePrice>단백질바 {lecture.price}</LecturePrice>
                 </LectureFlex>
             </LectureDetail>
         </LectureBox>  

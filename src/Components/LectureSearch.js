@@ -30,6 +30,23 @@ const SearchBtn = styled.div`
 `
 
 export function LectureSearch(){
+    const [lectureList, setLectureList] = useState(null);
+
+    useEffect(() => {
+        allLecture()
+    }, []);
+
+    async function allLecture(){
+        try{
+            const response = await axios.get("http://localhost:8080/api/findAllLecture");
+            const data = response.data;
+            console.log(data);
+            setLectureList(data);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
         <PopupContainer>
             <div style={{padding: '0 50px'}}>
@@ -39,7 +56,7 @@ export function LectureSearch(){
                     <SearchBtn>검색</SearchBtn>
                 </SearchBox>
                 <ScrollableContent height="500px" width="100%">
-                    <Lecture>{}</Lecture>
+                    {lectureList!=null? <Lecture lectureList={lectureList} />: null}
                 </ScrollableContent>
             </div>
         </PopupContainer>
@@ -52,10 +69,12 @@ const LectureBox = styled.div`
     gap: 15px;
     padding: 10px;
 `
-function Lecture(object){
+function Lecture({ lectureList }){
     return <LectureBox>
-        <LectureContainer/>
-        <LectureContainer/>
-        <LectureContainer/>
+        {
+          lectureList && lectureList.map((lecture)=>(
+            <LectureContainer key={lecture.id} lecture={lecture}/>
+          ))
+        }
     </LectureBox>
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { Title } from "./Styles"
+import axios from "axios"
 
 const Container = styled.div`
     background-color: white;
@@ -34,12 +35,24 @@ const LoginBtn = styled.div`
 export function Logout(){
     const navigate = useNavigate();
 
+    async function logout(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/user/logout", {}, { withCredentials: true });
+            const data = response.data;
+            console.log(data);
+            alert("로그아웃 되었습니다.");
+            window.location.href = '/login';
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
         <Title>Logout</Title>
         <Container>
             <Div>00님 로그아웃 하시겠습니까?</Div>
-            <LoginBtn>로그아웃</LoginBtn>
+            <LoginBtn onClick={()=>{logout()}}>로그아웃</LoginBtn>
             <LoginBtn onClick={()=>{navigate("/")}}>돌아가기</LoginBtn>
-        </Container>        
+        </Container>
     </>
 }
