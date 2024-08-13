@@ -4,6 +4,7 @@ import bookmarkcheck from "./../img/bookmark2check.png";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SessionCurrent } from "./SessionCurrent";
+import { useNavigate } from "react-router-dom";
 
 const LectureBox = styled.div`
     display: flex;
@@ -51,6 +52,9 @@ const LecturePrice = styled.div`
 export function LectureContainer(data){
     const { sessionUser } = SessionCurrent();
     const [buynum, setBuynum] = useState(0);
+    const [isScrap, setIsScrap] = useState(false);
+    const [scrapId, setScrapId] = useState();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (sessionUser) {
@@ -60,41 +64,64 @@ export function LectureContainer(data){
     }, [sessionUser]);
 
     const lecture = data.lecture;
-    console.log(sessionUser)
 
     async function buyNumber(){
         try{
             const response = await axios.post("http://localhost:8080/api/buyNumber", {id: lecture.id});
             const data = response.data;
             setBuynum(data);
+            // console.log("buynumdata", data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
         }
     }
 
-
-    
     async function userScrap(){
         try{
             const response = await axios.post("http://localhost:8080/api/findScrapLectureByUserAndLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
             const data = response.data;
-            console.log(data);
+            // console.log("setIsScrap", data);
+            if(data){
+                setIsScrap(true);
+                setScrapId(data.id);
+            }
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
+    async function ScrapClick(){
+        try{
+            if(isScrap){
+                const response = await axios.post("http://localhost:8080/api/deleteScrapLecture", {id: scrapId});
+                const data = response.data;
+                // console.log("is", data)
+                setIsScrap(!isScrap);
+            }else{
+                const response = await axios.post("http://localhost:8080/api/scrapLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
+                const data = response.data;
+                // console.log("is", data)
+                setIsScrap(!isScrap);
+            }
+            
         }catch(error){
             console.log("요청에 실패했습니다.", error);
         }
     }
     
     return <>
-        <LectureBox>
+        <LectureBox onClick={()=>(navigate('/lecture/'+ lecture.id))}>
             <div style={{display:'flex'}}>
                 <LectureImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg" />
-                <Div><img src={bookmark} style={{width:'100%'}}/></Div>
+                <Div onClick={(event) => {event.stopPropagation();ScrapClick();}}>
+                    <img src={isScrap?bookmarkcheck:bookmark} style={{width:'100%'}}/>
+                </Div>
             </div>
             <LectureDetail>
                 <LectureTitle>{lecture.lectureName}</LectureTitle>
                 <LectureFlex>
                     <LectureBuyNum>구매수 {buynum}</LectureBuyNum>
-                    <LecturePrice>단백질바 {lecture.price}</LecturePrice>
+                    <LecturePrice>단백질바 {lecture.price}개</LecturePrice>
                 </LectureFlex>
             </LectureDetail>
         </LectureBox>  

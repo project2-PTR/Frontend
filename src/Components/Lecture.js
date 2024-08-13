@@ -2,6 +2,10 @@ import styled from "styled-components";
 import { PopupContainer } from "./PopupContainer";
 import bookmark from "./../img/bookmark2.png";
 import bookmarkcheck from "./../img/bookmark2check.png";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { SessionCurrent } from "./SessionCurrent";
 
 const Title = styled.div`
     font-size: 50px;
@@ -40,6 +44,7 @@ const Div = styled.div`
 const TeacherImg = styled.img`
     width: 50px;
     height: 50px;
+    cursor: pointer;
 `
 const SubBtn = styled.div`
     font-size: 15px;
@@ -69,47 +74,166 @@ const Bold = styled.div`
 
 
 export function Lecture(){
+    const { id } = useParams();
+    const { sessionUser } = SessionCurrent();
+    const [lecture, setLecture] = useState(null);
+    const [subNum, setSubNum] = useState(0);
+    const [buyNum, setBuyNum] = useState(0);
+    const [ratingAVG, setRatingAVG] = useState(0);
+    const [category, setCategory] = useState(0);
+    const [isScrap, setIsScrap] = useState(false);
+    const [scrapId, setScrapId] = useState();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        Getlecture()
+    }, []);
+
+    useEffect(() => {
+        if(lecture!=null){
+            GetSubNum()
+            GetBuyNum()
+            GetRatingAVG()
+            GetCategory()
+        }
+        if (sessionUser) {
+            userScrap();
+        }
+    }, [lecture]);
+
+    async function Getlecture(){
+        try{
+            const response = await axios.get("http://localhost:8080/api/lecture/" + id);
+            const data = response.data;
+            console.log(data);
+            setLecture(data)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
+    async function GetSubNum(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/teacherSubscription", {id: lecture.teacher.id});
+            const data = response.data;
+            console.log(data);
+            setSubNum(data)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    async function GetBuyNum(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/buyNumber", {id: lecture.id});
+            const data = response.data;
+            console.log(data);
+            setBuyNum(data)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    async function GetRatingAVG(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/ratingAVG", {id: lecture.id});
+            const data = response.data;
+            console.log(data);
+            setRatingAVG(data)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    async function GetCategory(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/findLectureCategory", {id: lecture.id});
+            const category = response.data;
+            console.log(category);
+            let categorys = ""
+            category.forEach((data, index) => {
+                if (index == category.length - 1) {
+                  categorys = categorys + data.category.categoryName;
+                } else {
+                  categorys = categorys + data.category.categoryName + ", ";
+                }
+            });
+            setCategory(categorys);
+            console.log(categorys);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
+    async function userScrap(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/findScrapLectureByUserAndLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
+            const data = response.data;
+            if(data){
+                setIsScrap(true);
+                setScrapId(data.id);
+            }
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    async function ScrapClick(){
+        try{
+            if(isScrap){
+                const response = await axios.post("http://localhost:8080/api/deleteScrapLecture", {id: scrapId});
+                const data = response.data;
+                setIsScrap(!isScrap);
+            }else{
+                const response = await axios.post("http://localhost:8080/api/scrapLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
+                const data = response.data;
+                setIsScrap(!isScrap);
+            }
+            
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
-        <PopupContainer>
-            <Title>스트레칭 영상입니다.</Title>
+        {lecture? <PopupContainer>
+            <Title>{lecture.lectureName}</Title>
             <LectureContainer>
                 <LectureBox>
                     <div style={{display:'flex'}}>
                         <Img src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg" />
-                        <Div><img src={bookmark} style={{width:'100%'}}/></Div>
+                        <Div onClick={()=>{ScrapClick()}}><img src={isScrap?bookmarkcheck:bookmark} style={{width:'100%'}}/></Div>
                     </div>
                     <div style={{fontSize: '25px', marginTop: '30px'}}>영상소개</div>
-                    <div>안녕하세요. 스티브입니다. 안녕하세요. 스티브입니다. 안녕하세요. 안녕하세요. 스티브입니다. 안녕하세요.</div>
+                    <div>{lecture.description}</div>
                 </LectureBox>
                 <LectureBox>
                     <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-                        <TeacherImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg" />
+                        <TeacherImg src={lecture.teacher.user.profileImg}  onClick={()=>(navigate('/teacher/'+ lecture.teacher.id))}/>
                         <div style={{display: 'flex', flexDirection: 'column'}}>
-                            <div style={{fontSize: '20px', fontWeight: 'bold'}}>Steve</div>
-                            <div style={{fontSize: '15px'}}>구독자 10명</div>
+                            <div style={{fontSize: '20px', fontWeight: 'bold', cursor:'pointer'}} onClick={()=>(navigate('/teacher/'+ lecture.teacher.id))}>
+                                {lecture.teacher.user.userName}
+                            </div>
+                            <div style={{fontSize: '15px'}}>구독자 {subNum}명</div>
                         </div>
                         <SubBtn>구독</SubBtn>
                     </div>
                     <LectureDetailBox>
                         <Flex>
                             <Bold>구매자수</Bold>
-                            <div>10명</div>
+                            <div>{buyNum}명</div>
                         </Flex>
                         <Flex>
                             <Bold>평점</Bold>
-                            <div>10</div>
+                            <div>{ratingAVG=="NaN"?"없음":ratingAVG+"점"}</div>
                         </Flex>
                         <Flex>
                             <Bold>업로드일</Bold>
-                            <div>2020-01-01</div>
+                            <div>{lecture.createdAt}</div>
                         </Flex>
                         <Flex>
                             <Bold>카테고리</Bold>
-                            <div>유산소</div>
+                            <div>{category!=""? category: "없음"}</div>
                         </Flex>
                         <Flex>
                             <Bold>가격</Bold>
-                            <div>단백질바 0개</div>
+                            <div>단백질바 {lecture.price}개</div>
                         </Flex>
                     </LectureDetailBox>
                     <div>
@@ -118,6 +242,6 @@ export function Lecture(){
                     </div>
                 </LectureBox>
             </LectureContainer>
-        </PopupContainer>
+        </PopupContainer>: <div/>}
     </>
 }

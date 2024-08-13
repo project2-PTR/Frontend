@@ -36,9 +36,22 @@ export function LectureSearch(){
         allLecture()
     }, []);
 
+    let search = ""
+
     async function allLecture(){
         try{
             const response = await axios.get("http://localhost:8080/api/findAllLecture");
+            const data = response.data;
+            console.log(data);
+            setLectureList(data);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
+    async function lectureSearch(){
+        try{
+            const response = await axios.get("http://localhost:8080/api/searchLecture", {params: { query: search }});
             const data = response.data;
             console.log(data);
             setLectureList(data);
@@ -52,8 +65,8 @@ export function LectureSearch(){
             <div style={{padding: '0 50px'}}>
                 <Title style={{padding:'30px 0px 30px 0px'}}>영상 검색</Title>
                 <SearchBox>
-                    <Input type="text" placeholder="영상 이름을 입력하시오."/>
-                    <SearchBtn>검색</SearchBtn>
+                    <Input type="text" placeholder="영상 이름을 입력하시오." onChange={(e)=> {search = e.target.value}} />
+                    <SearchBtn onClick={()=>{lectureSearch()}}>검색</SearchBtn>
                 </SearchBox>
                 <ScrollableContent height="500px" width="100%">
                     {lectureList!=null? <Lecture lectureList={lectureList} />: null}

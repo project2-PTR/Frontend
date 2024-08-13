@@ -47,7 +47,7 @@ export function LectureBuy(){
         try{
             const response = await axios.post("http://localhost:8080/api/myBuyLecture", {userId: sessionUser});
             const data = response.data;
-            console.log(data);
+            console.log("buydata",data);
             setLectureList(data);
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -80,7 +80,7 @@ function TeacherLecture( {lectureList} ){
     return <LectureBox>
         {
           lectureList && lectureList.map((lecture)=>(
-            <LectureContainer key={lecture.id} lecture={lecture}/>
+            <LectureContainer key={lecture.id} lecture={lecture.lecture}/>
           ))
         }
     </LectureBox>

@@ -80,7 +80,7 @@ function ScrapLecture( {lectureList} ){
     return <LectureBox>
         {
           lectureList && lectureList.map((lecture)=>(
-            <LectureContainer key={lecture.id} lecture={lecture}/>
+            <LectureContainer key={lecture.id} lecture={lecture.lecture}/>
           ))
         }
     </LectureBox>

@@ -67,8 +67,8 @@ export function PopupContainer({ back, children }) {
     }, [navigate]);
 
     return <>
-        {back? 
-            <Back>
+        {!back? 
+            <Back  onClick={() => navigate(-1)}>
                 <img src={backBtn} style={{width:"80%"}}></img>
                 <div style={{color: "black"}}>뒤로가기</div>
             </Back> : null

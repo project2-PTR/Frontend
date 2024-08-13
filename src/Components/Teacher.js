@@ -5,6 +5,7 @@ import { LectureContainer } from "./LectureContainer";
 import { useEffect, useState } from "react";
 import { SessionCurrent } from "./SessionCurrent";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const TeacherBarContainer = styled.div`
     display: flex;
@@ -77,37 +78,65 @@ const SearchBtn = styled.div`
 `
 
 export function Teacher(){
-    const { sessionUser } = SessionCurrent();
+    const { id } = useParams();
+    const [teacher, setTeacher] = useState(null);
     const [lectureList, setLectureList] = useState(null);
+    const [subNum, setSubNum] = useState(0);
 
     useEffect(() => {
-        if (sessionUser) {
-            myScrapLecture();
-        }
-    }, [sessionUser]);
+        GetTeacher()
+    }, []);
 
-    async function myScrapLecture(){
+    useEffect(() => {
+        if(teacher!=null){
+            Getlecture()
+            GetSubNum()
+        }
+    }, [teacher]);
+
+    async function GetTeacher(){
         try{
-            const response = await axios.post("http://localhost:8080/api/myScrapLecture", {userId: sessionUser});
+            const response = await axios.get("http://localhost:8080/api/teacher/" + id);
             const data = response.data;
             console.log(data);
-            setLectureList(data);
+            setTeacher(data);
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
+    async function Getlecture(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/findTeacherLecture", {id: teacher.id});
+            const data = response.data;
+            console.log(data);
+            setLectureList(data)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    async function GetSubNum(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/teacherSubscription", {id: teacher.id});
+            const data = response.data;
+            console.log(data);
+            setSubNum(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
         }
     }
 
     return <>
-        <PopupContainer>
+        {teacher? <PopupContainer>
             <TeacherBarContainer>
                 <Flex>
-                    <TeacherImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg"/>
+                    <TeacherImg src={teacher.user.profileImg}/>
                     <FlexColumn>
                         <Flex>
-                            <TeacherName>Steve</TeacherName>
-                            <SubNum>구독자수 10명</SubNum>
+                            <TeacherName>{teacher.user.userName}</TeacherName>
+                            <SubNum>구독자 {subNum}명</SubNum>
                         </Flex>
-                        <TeacherProfile>안녕하세요. 스티브입니다.</TeacherProfile>
+                        <TeacherProfile>{teacher.user.profileText}</TeacherProfile>
                     </FlexColumn>
                 </Flex>
                 <SubBtn>구독</SubBtn>
@@ -119,7 +148,7 @@ export function Teacher(){
             <ScrollableContent height="500px" width="90%">
                 {lectureList!=null? <TeacherLecture lectureList={lectureList} />: null}
             </ScrollableContent>
-        </PopupContainer>
+        </PopupContainer>: <div/>}
     </>
 }
 
