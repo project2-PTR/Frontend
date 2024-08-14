@@ -61,7 +61,7 @@ export function LectureContainer(data){
             buyNumber();
             userScrap();
         }
-    }, [sessionUser]);
+    }, [sessionUser, isScrap]);
 
     const lecture = data.lecture;
 
@@ -95,12 +95,12 @@ export function LectureContainer(data){
             if(isScrap){
                 const response = await axios.post("http://localhost:8080/api/deleteScrapLecture", {id: scrapId});
                 const data = response.data;
-                // console.log("is", data)
+                console.log(data)
                 setIsScrap(!isScrap);
             }else{
                 const response = await axios.post("http://localhost:8080/api/scrapLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
                 const data = response.data;
-                // console.log("is", data)
+                console.log(data)
                 setIsScrap(!isScrap);
             }
             

@@ -6,6 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { SessionCurrent } from "./SessionCurrent";
+import { SubButton } from "./Styles";
+import { LectureReview } from "./LectureReview";
 
 const Title = styled.div`
     font-size: 50px;
@@ -46,7 +48,7 @@ const TeacherImg = styled.img`
     height: 50px;
     cursor: pointer;
 `
-const SubBtn = styled.div`
+const Btn = styled.div`
     font-size: 15px;
     padding: 10px 20px;
     background-color: #041346;
@@ -83,6 +85,7 @@ export function Lecture(){
     const [category, setCategory] = useState(0);
     const [isScrap, setIsScrap] = useState(false);
     const [scrapId, setScrapId] = useState();
+    const [reviewClose, setReviewClose] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -96,16 +99,19 @@ export function Lecture(){
             GetRatingAVG()
             GetCategory()
         }
+    }, [lecture]);
+
+    useEffect(() => {
         if (sessionUser) {
             userScrap();
         }
-    }, [lecture]);
+    }, [lecture, isScrap]);
 
     async function Getlecture(){
         try{
             const response = await axios.get("http://localhost:8080/api/lecture/" + id);
             const data = response.data;
-            console.log(data);
+            // console.log(data);
             setLecture(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -116,7 +122,7 @@ export function Lecture(){
         try{
             const response = await axios.post("http://localhost:8080/api/teacherSubscription", {id: lecture.teacher.id});
             const data = response.data;
-            console.log(data);
+            // console.log(data);
             setSubNum(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -126,7 +132,7 @@ export function Lecture(){
         try{
             const response = await axios.post("http://localhost:8080/api/buyNumber", {id: lecture.id});
             const data = response.data;
-            console.log(data);
+            // console.log(data);
             setBuyNum(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -136,7 +142,7 @@ export function Lecture(){
         try{
             const response = await axios.post("http://localhost:8080/api/ratingAVG", {id: lecture.id});
             const data = response.data;
-            console.log(data);
+            // console.log(data);
             setRatingAVG(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -146,7 +152,7 @@ export function Lecture(){
         try{
             const response = await axios.post("http://localhost:8080/api/findLectureCategory", {id: lecture.id});
             const category = response.data;
-            console.log(category);
+            // console.log(category);
             let categorys = ""
             category.forEach((data, index) => {
                 if (index == category.length - 1) {
@@ -156,7 +162,7 @@ export function Lecture(){
                 }
             });
             setCategory(categorys);
-            console.log(categorys);
+            // console.log(categorys);
         }catch(error){
             console.log("요청에 실패했습니다.", error);
         }
@@ -179,10 +185,12 @@ export function Lecture(){
             if(isScrap){
                 const response = await axios.post("http://localhost:8080/api/deleteScrapLecture", {id: scrapId});
                 const data = response.data;
+                console.log(data)
                 setIsScrap(!isScrap);
             }else{
                 const response = await axios.post("http://localhost:8080/api/scrapLecture", {user: {userId: sessionUser}, lecture: {id: lecture.id}});
                 const data = response.data;
+                console.log(data)
                 setIsScrap(!isScrap);
             }
             
@@ -192,7 +200,7 @@ export function Lecture(){
     }
 
     return <>
-        {lecture? <PopupContainer>
+        {lecture? reviewClose? <PopupContainer>
             <Title>{lecture.lectureName}</Title>
             <LectureContainer>
                 <LectureBox>
@@ -212,7 +220,7 @@ export function Lecture(){
                             </div>
                             <div style={{fontSize: '15px'}}>구독자 {subNum}명</div>
                         </div>
-                        <SubBtn>구독</SubBtn>
+                        <SubButton teacher={lecture.teacher} onToggle={GetSubNum}/>
                     </div>
                     <LectureDetailBox>
                         <Flex>
@@ -237,11 +245,11 @@ export function Lecture(){
                         </Flex>
                     </LectureDetailBox>
                     <div>
-                        <SubBtn>구매하기</SubBtn>
-                        <SubBtn>리뷰보기</SubBtn>
+                        <Btn>구매하기</Btn>
+                        <Btn onClick={()=>{setReviewClose(false)}}>리뷰보기</Btn>
                     </div>
                 </LectureBox>
             </LectureContainer>
-        </PopupContainer>: <div/>}
+        </PopupContainer>: <LectureReview lecture={lecture} buyNum={buyNum} subNum={subNum} reviewClose={()=>{setReviewClose(true)}}/>: <div></div>}
     </>
 }

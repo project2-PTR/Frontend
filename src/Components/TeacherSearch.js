@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { PopupContainer } from "./PopupContainer";
-import { ScrollableContent, Title } from "./Styles";
+import { ScrollableContent, SubButton, Title } from "./Styles";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SearchBox = styled.div`
     display: flex;
@@ -29,7 +30,7 @@ const SearchBtn = styled.div`
 `
 
 export function TeacherSearch(){
-    const [TeacherList, setTeacherList] = useState(null);
+    const [teacherList, setTeacherList] = useState(null);
 
     useEffect(()=>{
         allTeacherGet();
@@ -54,12 +55,11 @@ export function TeacherSearch(){
                     <SearchBtn>검색</SearchBtn>
                 </SearchBox>
                 <ScrollableContent height="500px" width="100%">
-                    <TeacherBar>{}</TeacherBar>
-                    <TeacherBar>{}</TeacherBar>
-                    <TeacherBar>{}</TeacherBar>
-                    <TeacherBar>{}</TeacherBar>
-                    <TeacherBar>{}</TeacherBar>
-                    <TeacherBar>{}</TeacherBar>
+                    {
+                      teacherList && teacherList.map((teacher)=>(
+                        <TeacherBar key={teacher.id} teacher={teacher}/>
+                      ))
+                    }
                 </ScrollableContent>
             </div>
         </PopupContainer>
@@ -113,22 +113,52 @@ const SubBtn = styled.div`
     text-align: center;
 `
 
-function TeacherBar(object){
+export function TeacherBar(teacher){
+    teacher = teacher.teacher;
+    const [lectureNum, setLectureNum] = useState(null);
+    const [subNum, setSubNum] = useState(0);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        Getlecture()
+        GetSubNum()
+    }, []);
+
+    async function Getlecture(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/findTeacherLecture", {id: teacher.id});
+            const data = response.data;
+            setLectureNum(data.length)
+            // console.log(data.length)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+    async function GetSubNum(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/teacherSubscription", {id: teacher.id});
+            const data = response.data;
+            setSubNum(data)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
-        <TeacherBarContainer>
+        <TeacherBarContainer onClick={()=>(navigate('/teacher/'+ teacher.id))}>
             <Flex>
-                <TeacherImg src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg"/>
+                <TeacherImg src={teacher.user.profileImg}/>
                 <FlexColumn>
                     <Flex>
-                        <TeacherName>Steve</TeacherName>
-                        <SubNum> | 구독자수 10명</SubNum>
-                        <LectureNum> - 영상수 10개</LectureNum>
-                        <Date>2020.01.01 가입</Date>
+                        <TeacherName>{teacher.user.userName}</TeacherName>
+                        <SubNum> | 구독자수 {subNum}명</SubNum>
+                        <LectureNum> - 영상수 {lectureNum}개</LectureNum>
+                        <Date>{teacher.user.createdAt} 가입</Date>
                     </Flex>
-                    <TeacherProfile>안녕하세요. 스티브입니다.</TeacherProfile>
+                    <TeacherProfile>{teacher.user.profileText}</TeacherProfile>
                 </FlexColumn>
             </Flex>
-            <SubBtn>구독</SubBtn>
+            <SubButton teacher={teacher} onToggle={GetSubNum}/>
         </TeacherBarContainer>
     </>
 }

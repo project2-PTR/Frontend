@@ -38,6 +38,7 @@ export function Game(){
             <StyledLink to='/lecture/scrap'>LectureScrap</StyledLink>
             <StyledLink to='/teacher/1'>Teacher</StyledLink>
             <StyledLink to='/teacher/search'>TeacherSearch</StyledLink>
+            <StyledLink to='/teacher/subscription'>TeacherSub</StyledLink>
             <StyledLink to='/record'>Record</StyledLink>
         </Container>
     </>

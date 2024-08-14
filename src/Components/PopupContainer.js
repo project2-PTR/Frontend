@@ -10,7 +10,7 @@ const Popup = styled.div`
     left: 50%; /* 가로 중앙 */
     transform: translateX(-50%); /* 중앙 정렬을 위해 이동 */
     background: white;
-    padding: 20px;
+    padding: ${props => props.$padding? props.$padding: "20px"};
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 10; /* 팝업이 다른 요소 위에 나타나게 하기 위한 설정 */
     color: black;
@@ -47,7 +47,7 @@ const CloseBtn = styled.div`
     cursor: pointer;
 `
 
-export function PopupContainer({ back, children }) {
+export function PopupContainer({ padding, back, children }) {
     const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
     const popupRef = useRef(null); // 팝업 요소를 참조하기 위한 ref
 
@@ -74,7 +74,7 @@ export function PopupContainer({ back, children }) {
             </Back> : null
         }
         
-        <Popup ref={popupRef}>
+        <Popup ref={popupRef} $padding={padding}>
             { children }
         </Popup>
         <CloseBtn onClick={() => navigate('/')}>

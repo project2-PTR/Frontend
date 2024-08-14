@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { PopupContainer } from "./PopupContainer";
-import { ScrollableContent } from "./Styles";
+import { ScrollableContent, SubButton } from "./Styles";
 import { LectureContainer } from "./LectureContainer";
 import { useEffect, useState } from "react";
 import { SessionCurrent } from "./SessionCurrent";
@@ -82,7 +82,7 @@ export function Teacher(){
     const [teacher, setTeacher] = useState(null);
     const [lectureList, setLectureList] = useState(null);
     const [subNum, setSubNum] = useState(0);
-
+    
     useEffect(() => {
         GetTeacher()
     }, []);
@@ -98,7 +98,6 @@ export function Teacher(){
         try{
             const response = await axios.get("http://localhost:8080/api/teacher/" + id);
             const data = response.data;
-            console.log(data);
             setTeacher(data);
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -109,7 +108,6 @@ export function Teacher(){
         try{
             const response = await axios.post("http://localhost:8080/api/findTeacherLecture", {id: teacher.id});
             const data = response.data;
-            console.log(data);
             setLectureList(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -119,7 +117,6 @@ export function Teacher(){
         try{
             const response = await axios.post("http://localhost:8080/api/teacherSubscription", {id: teacher.id});
             const data = response.data;
-            console.log(data);
             setSubNum(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -139,7 +136,7 @@ export function Teacher(){
                         <TeacherProfile>{teacher.user.profileText}</TeacherProfile>
                     </FlexColumn>
                 </Flex>
-                <SubBtn>구독</SubBtn>
+                <SubButton teacher={teacher} onToggle={GetSubNum}/>
             </TeacherBarContainer>
             <SearchBox>
                 <Input type="text" placeholder="영상 이름을 입력하시오."/>
