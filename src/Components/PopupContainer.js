@@ -47,7 +47,7 @@ const CloseBtn = styled.div`
     cursor: pointer;
 `
 
-export function PopupContainer({ padding, back, children }) {
+export function PopupContainer({ padding, back, children, backNavigate}) {
     const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅
     const popupRef = useRef(null); // 팝업 요소를 참조하기 위한 ref
 
@@ -68,7 +68,7 @@ export function PopupContainer({ padding, back, children }) {
 
     return <>
         {!back? 
-            <Back  onClick={() => navigate(-1)}>
+            <Back  onClick={() => backNavigate? backNavigate(): navigate(-1)}>
                 <img src={backBtn} style={{width:"80%"}}></img>
                 <div style={{color: "black"}}>뒤로가기</div>
             </Back> : null

@@ -40,10 +40,13 @@ const ReviewContainer = styled.div`
 const WriteBox = styled.div`
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
     width: 100%;
 `
 const WriteBtns = styled.div`
     display: flex;
+    gap: 10px;
 `
 const WriteReviewBox = styled.div`
     display: flex;
@@ -88,19 +91,36 @@ const Tr = styled.tr`
 
 `;
 
-export function LectureReview({lecture, buyNum, subNum, reviewClose}){
+const Btn = styled.div`
+    width: 80px;
+    padding: 10px 0;
+    background-color: #041346;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+`
+
+export function LectureReview({lecture, buyNum, subNum, sessionUser, reviewClose}){
     const [reviewList, setReviewList] = useState(null);
+    const [reviewWrite, setReviewWrite] = useState(false);
+    const [reviewChange, setReviewChange] = useState(false);
 
     useEffect(() => {
-        GetSubNum()
+        GetReviewList()
     }, []);
 
     useEffect(() => {
         if (reviewList) {
         }
     }, [reviewList]);
+
+    useEffect(() => {
+        setReviewWrite(false)
+        GetReviewList()
+    }, [reviewChange]);
     
-    async function GetSubNum(){
+    async function GetReviewList(){
         try{
             const response = await axios.post("http://localhost:8080/api/findReviewByLecture", {id: lecture.id});
             const data = response.data;
@@ -111,9 +131,23 @@ export function LectureReview({lecture, buyNum, subNum, reviewClose}){
         }
     }
 
+    let rating = -1;
+    let review = "";
+
+    async function changeLectureUser(){
+        try{
+            const response = await axios.post("http://localhost:8080/api/changeLectureUser", {user: {userId: sessionUser}, lecture: {id: lecture.id}, teacherRating: rating, teacherReview: review});
+            const data = response.data;
+            console.log(data);
+            setReviewChange(!reviewChange)
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
-        {reviewList? <PopupContainer padding="0">
-            <LectureBox onClick={reviewClose}>
+        {reviewList? <PopupContainer padding="0" backNavigate={()=>{reviewClose()}}>
+            <LectureBox onClick={()=>{reviewClose()}}>
                 <Img src="https://cdn.pixabay.com/photo/2014/11/30/14/11/cat-551554_1280.jpg" />
                 <div>
                     <div style={{fontSize:"30px", fontWeight:"bold"}}>{lecture.lectureName}</div>
@@ -125,19 +159,19 @@ export function LectureReview({lecture, buyNum, subNum, reviewClose}){
                 </div>
             </LectureBox>
             <ReviewContainer>
-                <WriteBox>
-                    <div>리뷰작성</div>
+                {reviewWrite? <><WriteBox>
+                    <div style={{fontSize:"20px"}}>리뷰작성</div>
                     <WriteBtns>
-                        <div>취소</div>
-                        <div>완료</div>
+                        <Btn onClick={()=>{setReviewWrite(false)}}>취소</Btn>
+                        <Btn onClick={()=>{changeLectureUser()}}>완료</Btn>
                     </WriteBtns>
                 </WriteBox>
                 <WriteReviewBox>
                     <div>별점</div>
-                    <input type="number" min="0" max="10" style={{padding:"5px"}}/>
+                    <input type="number" min="0" max="10" style={{padding:"5px"}} onChange={(e)=> {rating = e.target.value}}/>
                     <div style={{marginLeft:"20px"}}>리뷰내용</div>
-                    <textarea style={{width:"100%", flex:1, padding:"5px"}}/>
-                </WriteReviewBox>
+                    <textarea style={{width:"100%", flex:1, padding:"5px"}} onChange={(e)=> {review = e.target.value}}/>
+                </WriteReviewBox></>: <Btn onClick={()=>{setReviewWrite(true)}}>리뷰작성</Btn>}
                 <ReviewBox>
                     <Table className="lecture_reviews_table">
                         <caption></caption>

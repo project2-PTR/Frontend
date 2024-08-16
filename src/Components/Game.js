@@ -31,7 +31,9 @@ export function Game(){
 
     return <>
         <Container hidden={hiddenGame}>
-            <StyledLink to='/feed'>Feed</StyledLink>
+            <StyledLink to='/feed/1'>Feed</StyledLink>
+            <StyledLink to='/feed/scrap'>FeedScrap</StyledLink>
+            <StyledLink to='/feed/like'>FeedLike</StyledLink>
             <StyledLink to='/lecture/1'>Lecture</StyledLink>
             <StyledLink to='/lecture/search'>LectureSearch</StyledLink>
             <StyledLink to='/lecture/buy'>LectureBuy</StyledLink>
@@ -40,6 +42,8 @@ export function Game(){
             <StyledLink to='/teacher/search'>TeacherSearch</StyledLink>
             <StyledLink to='/teacher/subscription'>TeacherSub</StyledLink>
             <StyledLink to='/record'>Record</StyledLink>
+            <StyledLink to='/cashbuy'>Cash</StyledLink>
+            <StyledLink to='/gym'>Gym</StyledLink>
         </Container>
     </>
 }

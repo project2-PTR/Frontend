@@ -16,6 +16,9 @@ import { LectureScrap } from "./LectureScrap";
 import { Wrapper } from "./Wrapper";
 import { TeacherSub } from "./TeacherSub";
 import { LectureReview } from "./LectureReview";
+import { CashBuy } from "./CashBuy";
+import { Gym } from "./Gym";
+import { FeedList } from "./FeedList";
 
 export function ReactRouter() {
   return <>
@@ -27,7 +30,11 @@ export function ReactRouter() {
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/signup' element={<Signup/>}></Route>
         <Route path='/logout' element={<Logout/>}></Route>
-        <Route path='/feed' element={<Feed/>}></Route>
+        <Route path='/feed' element={<Wrapper/>}>
+          <Route path=":id" element={<Feed/>}></Route>
+          <Route path='scrap' element={<FeedList/>}></Route>
+          <Route path='like' element={<FeedList/>}></Route>
+        </Route>
         <Route path='/lecture' element={<Wrapper/>}>
           <Route path=":id" element={<Wrapper/>}>
             <Route index element={<Lecture/>} />
@@ -43,6 +50,8 @@ export function ReactRouter() {
           <Route path='subscription' element={<TeacherSub/>}></Route>
         </Route>
         <Route path='/record' element={<Record/>}></Route>
+        <Route path='/cashbuy' element={<CashBuy/>}></Route>
+        <Route path='/gym' element={<Gym/>}></Route>
       </Routes>
     </BrowserRouter>
   </>

@@ -250,6 +250,6 @@ export function Lecture(){
                     </div>
                 </LectureBox>
             </LectureContainer>
-        </PopupContainer>: <LectureReview lecture={lecture} buyNum={buyNum} subNum={subNum} reviewClose={()=>{setReviewClose(true)}}/>: <div></div>}
+        </PopupContainer>: <LectureReview lecture={lecture} buyNum={buyNum} subNum={subNum} sessionUser={sessionUser} reviewClose={()=>{setReviewClose(true)}}/>: <div></div>}
     </>
 }
