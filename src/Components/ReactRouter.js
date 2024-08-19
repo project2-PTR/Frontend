@@ -19,6 +19,7 @@ import { LectureReview } from "./LectureReview";
 import { CashBuy } from "./CashBuy";
 import { Gym } from "./Gym";
 import { FeedList } from "./FeedList";
+import { FeedUser } from "./FeedUser";
 
 export function ReactRouter() {
   return <>
@@ -34,6 +35,7 @@ export function ReactRouter() {
           <Route path=":id" element={<Feed/>}></Route>
           <Route path='scrap' element={<FeedList/>}></Route>
           <Route path='like' element={<FeedList/>}></Route>
+          <Route path="user/:id" element={<FeedUser/>}></Route>
         </Route>
         <Route path='/lecture' element={<Wrapper/>}>
           <Route path=":id" element={<Wrapper/>}>

@@ -32,6 +32,7 @@ export function Game(){
     return <>
         <Container hidden={hiddenGame}>
             <StyledLink to='/feed/1'>Feed</StyledLink>
+            <StyledLink to='/feed/user/rose'>FeedUser</StyledLink>
             <StyledLink to='/feed/scrap'>FeedScrap</StyledLink>
             <StyledLink to='/feed/like'>FeedLike</StyledLink>
             <StyledLink to='/lecture/1'>Lecture</StyledLink>
