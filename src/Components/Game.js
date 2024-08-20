@@ -35,6 +35,8 @@ export function Game(){
             <StyledLink to='/feed/user/rose'>FeedUser</StyledLink>
             <StyledLink to='/feed/scrap'>FeedScrap</StyledLink>
             <StyledLink to='/feed/like'>FeedLike</StyledLink>
+            <StyledLink to='/feed/search'>FeedSearch</StyledLink>
+            <StyledLink to='/feed/search/user'>FeedUserSearch</StyledLink>
             <StyledLink to='/lecture/1'>Lecture</StyledLink>
             <StyledLink to='/lecture/search'>LectureSearch</StyledLink>
             <StyledLink to='/lecture/buy'>LectureBuy</StyledLink>

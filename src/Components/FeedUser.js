@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { SessionCurrent } from "./SessionCurrent";
 import styled from "styled-components";
-import { ScrollableContent } from "./Styles";
+import { FollowerTooltip, FollowingTooltip, ScrollableContent, Tooltip } from "./Styles";
 
 const ProfileImg = styled.img`
     width: 150px;
@@ -76,13 +76,13 @@ export function FeedUser(){
 
     useEffect(() => {
         GetFeedList()
-        GetFollowing()
         GetUser()
         IsTeacher()
     }, [id]);
 
     useEffect(() => {
         GetFollower()
+        GetFollowing()
     }, [id, followChange]);
 
     useEffect(() => {
@@ -94,8 +94,10 @@ export function FeedUser(){
     useEffect(() => {
         if(sessionUser==id){
             setIsMyPage(true)
+        }else{
+            setIsMyPage(false)
         }
-    }, [sessionUser]);
+    }, [id, sessionUser]);
 
     function IsUserFollow(){
         setSessionUserFollow()
@@ -201,14 +203,18 @@ export function FeedUser(){
                             <div>피드</div>
                             <div>{feedList.length}개</div>
                         </FlexC>
-                        <FlexC style={{gap: "0", alignItems:"center"}}>
-                            <div>팔로워</div>
-                            <div>{follower.length}명</div>
-                        </FlexC>
-                        <FlexC style={{gap: "0", alignItems:"center"}}>
-                            <div>팔로잉</div>
-                            <div>{following.length}명</div>
-                        </FlexC>
+                        <Tooltip tooltipContents={FollowerTooltip(follower, ()=>{setFollowChange(!followChange)})}>
+                            <FlexC style={{gap: "0", alignItems:"center", cursor:"pointer"}}>
+                                <div>팔로워</div>
+                                <div>{follower.length}명</div>
+                            </FlexC>
+                        </Tooltip>
+                        <Tooltip tooltipContents={FollowingTooltip(following, ()=>{setFollowChange(!followChange)})}>
+                            <FlexC style={{gap: "0", alignItems:"center", cursor:"pointer"}}>
+                                <div>팔로잉</div>
+                                <div>{following.length}명</div>
+                            </FlexC>
+                        </Tooltip>
                     </Flex>
                     <Flex>
                         {isMyPage? <Btn onClick={()=>{}}>프로필 편집</Btn> :<Btn onClick={()=>{FollowClick()}}>{sessionUserFollow? "팔로잉": "팔로우"}</Btn>}

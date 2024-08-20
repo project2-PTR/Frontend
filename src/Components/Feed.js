@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ScrollableContent, Title } from "./Styles";
+import { FollowerTooltip, FollowingTooltip, LikeTooltip, ScrollableContent, Title, Tooltip } from "./Styles";
 import { PopupContainer } from "./PopupContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -45,6 +45,26 @@ const CommentBtn = styled.div`
     padding: 3px;
     width: 100px;
     text-align: center;
+    border: 1px solid #333;
+    /* border-radius: 3px; */
+    cursor: pointer;
+`
+
+const FollowerBtn = styled.div`
+    background-color: #25559B;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    border: 2px solid black;
+    cursor: pointer;
+`
+
+const FollowingBtn = styled.div`
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+    padding: 5px;
+    border: 2px solid black;
     cursor: pointer;
 `
 
@@ -56,10 +76,12 @@ export function Feed() {
     const { sessionUser } = SessionCurrent();
     const [scrap, setScrap] = useState(false);
     const [like, setLike] = useState(false);
-    const [likeNum, setLikeNum] = useState(0);
+    const [likeList, setLikeList] = useState();
     const [commentList, setCommentList] = useState();
     const [commentPost, setCommentPost] = useState(false);
     const navigate = useNavigate();
+    const [sessionUserFollow, setSessionUserFollow] = useState();
+    const [followChange, setFollowChange] = useState(false);
 
     useEffect(() => {
         GetFeed()
@@ -70,7 +92,7 @@ export function Feed() {
             GetFollower()
             GetFollowing()
         }
-    }, [feed]);
+    }, [feed, followChange]);
 
     useEffect(() => {
         if(feed&&sessionUser){
@@ -81,7 +103,7 @@ export function Feed() {
 
     useEffect(() => {
         if(feed&&sessionUser){
-            GetFeedLikeNum()
+            GetFeedLikeList()
         }
     }, [like]);
 
@@ -90,6 +112,23 @@ export function Feed() {
             GetFeedCommentList()
         }
     }, [feed, commentPost]);
+
+    useEffect(() => {
+        if(sessionUser && follower){
+            IsUserFollow()
+        }
+    }, [sessionUser, follower]);
+
+    function IsUserFollow(){
+        setSessionUserFollow()
+        follower.map((userFollow)=>
+            {console.log(userFollow.user.userId);
+                if(userFollow.user.userId==sessionUser){
+                setSessionUserFollow(userFollow.id)
+                return
+            }}
+        )
+    }
 
     async function GetFeed(){
         try{
@@ -146,12 +185,12 @@ export function Feed() {
         }
     }
 
-    async function GetFeedLikeNum(){
+    async function GetFeedLikeList(){
         try{
-            const response = await axios.post("http://localhost:8080/api/numberOfFeedLike", {id:feed.id});
+            const response = await axios.post("http://localhost:8080/api/getFeedLike", {id:feed.id});
             const data = response.data;
-            // console.log("GetFeedLikeNum", data);
-            setLikeNum(data)
+            console.log("GetFeedLikeList", data);
+            setLikeList(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
         }
@@ -234,21 +273,55 @@ export function Feed() {
         }
     }
 
+    async function FollowClick(){
+        try{
+            if(sessionUserFollow){
+                const response = await axios.delete("http://localhost:8080/api/userFollow", {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        id:sessionUserFollow
+                    }
+                });
+                const data = response.data;
+                console.log("FollowClick", data)
+                setFollowChange(!followChange);
+            }else{
+                const response = await axios.post("http://localhost:8080/api/userFollow", {user:{userId: sessionUser}, user2:{userId: feed.user.userId}});
+                const data = response.data;
+                console.log("FollowClick", data)
+                setFollowChange(!followChange);
+            }
+        }catch(error){
+            console.log("요청에 실패했습니다.", error);
+        }
+    }
+
     return <>
         {feed && follower && following? <PopupContainer>
             <Title style={{padding: "20px"}}>Feed</Title>
             <Container>
                 <Contents>
-                    <Flex style={{padding: "5px 15px"}}>
-                        <ProfileImg src={feed.user.profileImg} onClick={()=>{navigate("/feed/user/"+feed.user.userId)}}/>
-                        <div>
-                            <Flex>
-                                <div style={{fontSize: "20px", fontWeight: "bold"}}>{feed.user.userId}</div>
-                                <div>팔로워 {follower.length}명</div>
-                                <div>팔로잉 {following.length}명</div>
-                            </Flex>
-                            <div>{feed.createdAt}업로드</div>
-                        </div>
+                    <Flex style={{padding: "5px 15px", justifyContent:"space-between"}}>
+                        <Flex>
+                            <ProfileImg src={feed.user.profileImg} onClick={()=>{navigate("/feed/user/"+feed.user.userId)}}/>
+                            <div>
+                                <Flex>
+                                    <div style={{fontSize: "20px", fontWeight: "bold"}}>{feed.user.userId}</div>
+                                    <Tooltip tooltipContents={FollowerTooltip(follower, ()=>{setFollowChange(!followChange)})}>
+                                        <div style={{cursor:"pointer"}}>팔로워 {follower.length}명</div>
+                                    </Tooltip>
+                                    <Tooltip tooltipContents={FollowingTooltip(following, ()=>{setFollowChange(!followChange)})}>
+                                        <div style={{cursor:"pointer"}}>팔로잉 {following.length}명</div>
+                                    </Tooltip>
+                                </Flex>
+                                <div>{feed.createdAt}업로드</div>
+                            </div>
+                        </Flex>
+                        {sessionUser!=feed.user.userId? sessionUserFollow? <FollowingBtn onClick={()=>{FollowClick()}}>팔로잉</FollowingBtn>: 
+                            <FollowerBtn onClick={()=>{FollowClick()}}>팔로우</FollowerBtn>: null
+                        }
                     </Flex>
 
                     <img src={feed.image} style={{width: "100%"}}/>
@@ -256,7 +329,9 @@ export function Feed() {
                         <div>{feed.text}</div>
                         <Flex>
                             <img src={like? redheart: heart} style={{height: "25px", cursor:"pointer"}} onClick={()=>{LikeClick()}}/>
-                            <div style={{marginLeft:"-10px", cursor:"pointer"}}>{likeNum}</div>
+                            <Tooltip tooltipContents={LikeTooltip(likeList, ()=>{setFollowChange(!followChange)})} bottom="true">
+                                <div style={{marginLeft:"-10px", cursor:"pointer"}}>{likeList? likeList.length: "0"}</div>
+                            </Tooltip>
                             <img src={scrap? blackbookmark: bookmark} style={{height: "25px", cursor:"pointer"}} onClick={()=>{ScrapClick()}}/>
                         </Flex>
                     </Flex>
@@ -299,7 +374,7 @@ export function FeedCommentBar({comment, func}){
     const { sessionUser } = SessionCurrent();
     const [commentList, setCommentList] = useState();
     const [like, setLike] = useState(false);
-    const [likeNum, setLikeNum] = useState(0);
+    const [likeList, setLikeList] = useState();
     const [commentLook, setCommentLook] = useState(false);
     const [commentWriteLook, setCommentWriteLook] = useState(false);
     const [commentPost, setCommentPost] = useState(false);
@@ -331,7 +406,7 @@ export function FeedCommentBar({comment, func}){
     }, [sessionUser]);
 
     useEffect(() => {
-        GetFeedLikeNum()
+        GetFeedLikeList()
     }, [like]);
     
     async function getFeedCommentByFeedComment(){
@@ -356,12 +431,12 @@ export function FeedCommentBar({comment, func}){
         }
     }
 
-    async function GetFeedLikeNum(){
+    async function GetFeedLikeList(){
         try{
             const response = await axios.post("http://localhost:8080/api/numberOfFeedCommentLike", {id:comment.id});
             const data = response.data;
             // console.log("GetFeedLike", data);
-            setLikeNum(data)
+            setLikeList(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
         }
@@ -422,14 +497,14 @@ export function FeedCommentBar({comment, func}){
                             <Flex>
                                 <div style={{fontSize: "12px", color: "gray", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentWriteLook(!commentWriteLook)}}>답글달기</div>
                                 {commentList? commentList.length!=0? 
-                                    (<div style={{fontSize: "12px", color: "gray", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentLook(!commentLook)}}>
+                                    (<div style={{fontSize: "12px", color: "#25559B", fontWeight:"bold", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentLook(!commentLook)}}>
                                     {commentLook? "↑답글닫기": "↓답글보기("+commentList.length+"개)"}</div>): null: null
                                 }
                             </Flex>
                         </div>
                         <Flex style={{gap: "5px"}}>
                             <img src={like? redheart: heart} style={{height: "15px", cursor:"pointer"}} onClick={()=>{LikeClick()}}/>
-                            <div style={{cursor:"pointer"}}>{likeNum}</div>
+                            <div style={{cursor:"pointer"}}>{likeList? likeList: "0"}</div>
                         </Flex>
                     </Flex>
                     {commentWriteLook? <Flex ref={commentInputRef} style={{gap: "0"}}>
