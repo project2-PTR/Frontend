@@ -16,9 +16,36 @@ const ScrollableContainer = styled.div`
     width: ${props => props.width};         /* 컨테이너의 너비 */
     height: ${props => props.height};      /* 고정된 높이 설정 */
     overflow-y: auto;   /* 수직 스크롤 활성화 */
-    border: 1px solid #ccc; /* 경계선 추가 (선택 사항) */
+    /* border: 1px solid #ccc; 경계선 추가 (선택 사항) */
     padding: ${props => props.padding? props.padding: "10px"};      /* 내부 여백 추가 (선택 사항) */
     margin: auto;
+    /* scrollbar-width: thin; */
+    /* scrollbar-width: none; */
+    /* 스크롤바 모양 직접 설정 */
+    &::-webkit-scrollbar {
+        width: 10px; 
+        height: 10px;  
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #888;             /* 스크롤바의 색상 */
+        border-radius: 10px;                /* 스크롤바 모서리를 둥글게 */
+        border: 2px solid #555;             /* 스크롤바 테두리 색상 및 두께 */
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #555;             /* 마우스 오버 시 스크롤바 색상 */
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: #f1f1f1;          /* 스크롤바 트랙(배경) 색상 */
+        border-radius: 10px;                /* 트랙 모서리 둥글게 */
+        border: 1px solid #d4d4d4;          /* 트랙 테두리 색상 및 두께 */
+    }
+    
+    &::-webkit-scrollbar-corner {
+        background-color: #f1f1f1;          /* 스크롤바 모퉁이 색상 */
+    }
 `
 
 export function ScrollableContent({ width, height, padding, children }) {

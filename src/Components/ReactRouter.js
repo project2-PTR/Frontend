@@ -22,17 +22,24 @@ import { FeedList } from "./FeedList";
 import { FeedUser } from "./FeedUser";
 import { FeedSearch } from "./FeedSearch";
 import { FeedUserSearch } from "./FeedUserSearch";
+import { MyPage } from "./MyPage";
+import { MyPageEdit } from "./MyPageEdit";
 
 export function ReactRouter() {
   return <>
     <BrowserRouter>
       <Header/>
-      <Game/>
+      {/* <Game/> */}
       <Routes>
         <Route path='/' element={<Home/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/signup' element={<Signup/>}></Route>
         <Route path='/logout' element={<Logout/>}></Route>
+        <Route path='/mypage' element={<MyPage/>}>
+          <Route path='edit' element={<MyPageEdit/>}></Route>
+          <Route path='scrap' element={<FeedList/>}></Route>
+          <Route path='like' element={<FeedList/>}></Route>
+        </Route>
         <Route path='/feed' element={<Wrapper/>}>
           <Route path=":id" element={<Feed/>}></Route>
           <Route path='scrap' element={<FeedList/>}></Route>

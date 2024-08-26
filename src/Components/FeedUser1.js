@@ -6,14 +6,9 @@ import { SessionCurrent } from "./SessionCurrent";
 import styled from "styled-components";
 import { FollowerTooltip, FollowingTooltip, ScrollableContent, Tooltip } from "./Styles";
 
-const Container = styled.div`
-    padding: 10px 15%;
-    width: 100%;
-`
-
 const ProfileImg = styled.img`
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
 `
 
@@ -31,12 +26,14 @@ const FlexC = styled.div`
 `
 
 const ProfileText = styled.div`
+    background-color: #ccc;
     border-radius: 5px;
+    padding: 10px;
 `
 
 const FeedContainer = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 15px;
 `
 
@@ -50,10 +47,10 @@ const Img = styled.img`
 `
 
 const Btn = styled.div`
-    width: 200px;
+    width: 150px;
     padding: 10px 0;
-    border-radius: 50px;
-    background-color: #561689;
+    border-radius: 5px;
+    /* background-color: gray; */
     border: 1px solid black;
     text-align: center;
     cursor: pointer;
@@ -193,45 +190,46 @@ export function FeedUser(){
         }
     }
 
-    return <Container>
-        {user? <div style={{display:"flex", flexDirection:"column", alignItems:"center", width:"100%"}}>
-            <Flex style={{marginBottom:"20px", gap:"10%", width:"100%"}}>
-                <ProfileImg src={user.profileImg}/>
-                {follower && following && feedList? <FlexC style={{width:"100%"}}>
-                    <Flex style={{gap: "50px", fontSize: "20px", justifyContent:"space-between"}}>
-                        <FlexC style={{gap: "10px", alignItems:"center"}}>
-                            <div>Feed</div>
-                            <div>{feedList.length}</div>
+    return <PopupContainer padding="20px 80px">
+        {user? <>
+            <Flex style={{marginBottom:"20px"}}>
+                <FlexC style={{marginRight:"20px", alignItems:"center", gap: "0"}}>
+                    <ProfileImg src={user.profileImg}/>
+                    <div style={{fontSize:"30px", fontWeight:"bold"}}>{id}</div>
+                </FlexC>
+                {follower && following && feedList? <FlexC>
+                    <Flex style={{gap: "30px", fontSize: "20px"}}>
+                        <FlexC style={{gap: "0", alignItems:"center"}}>
+                            <div>피드</div>
+                            <div>{feedList.length}개</div>
                         </FlexC>
                         <Tooltip tooltipContents={FollowerTooltip(follower, ()=>{setFollowChange(!followChange)})}>
-                            <FlexC style={{gap: "10px", alignItems:"center", cursor:"pointer"}}>
-                                <div>Follower</div>
-                                <div>{follower.length}</div>
+                            <FlexC style={{gap: "0", alignItems:"center", cursor:"pointer"}}>
+                                <div>팔로워</div>
+                                <div>{follower.length}명</div>
                             </FlexC>
                         </Tooltip>
                         <Tooltip tooltipContents={FollowingTooltip(following, ()=>{setFollowChange(!followChange)})}>
-                            <FlexC style={{gap: "10px", alignItems:"center", cursor:"pointer"}}>
-                                <div>Following</div>
-                                <div>{following.length}</div>
+                            <FlexC style={{gap: "0", alignItems:"center", cursor:"pointer"}}>
+                                <div>팔로잉</div>
+                                <div>{following.length}명</div>
                             </FlexC>
                         </Tooltip>
-                        <Flex>
-                            {isMyPage? <Btn onClick={()=>{}}>프로필 편집</Btn> :<Btn onClick={()=>{FollowClick()}}>{sessionUserFollow? "following": "follow"}</Btn>}
-                            {teacher? <Btn onClick={()=>{navigate("/teacher/"+teacher.id)}}>lecture page</Btn>: null}
-                        </Flex>
                     </Flex>
-                    <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"20px"}}>{id}</div>
+                    <Flex>
+                        {isMyPage? <Btn onClick={()=>{}}>프로필 편집</Btn> :<Btn onClick={()=>{FollowClick()}}>{sessionUserFollow? "팔로잉": "팔로우"}</Btn>}
+                        {teacher? <Btn onClick={()=>{navigate("/teacher/"+teacher.id)}}>강사 페이지로 이동</Btn>: null}
+                    </Flex>
                     <ProfileText>{user.profileText}</ProfileText>
                 </FlexC>: null}
             </Flex>
-        </div>: null}
-        <div style={{borderTop:"1px solid white", margin:"30px 0"}}></div>
-        {/* <ScrollableContent width="100%" height="500px"> */}
+        </>: null}
+        <ScrollableContent width="100%" height="500px">
             <FeedContainer>
                 {feedList && feedList.map((feed, index)=>(
                     <Img key={index} src={feed.image} onClick={()=>{navigate("/feed/"+feed.id)}}/>
                 ))}
             </FeedContainer>
-        {/* </ScrollableContent> */}
-    </Container>
+        </ScrollableContent>
+    </PopupContainer>
 }

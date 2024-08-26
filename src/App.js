@@ -17,13 +17,13 @@ const GlobalStyle = createGlobalStyle`
 `
 
 const All = styled.div`
-  background-color: #333;
+  background-color: #111;
   color: white;
   height: 100vh;
 `
 
 const All2 = styled.div`
-  background-color: #333;
+  background-color: #111;
   color: white;
   padding-bottom: 50px;
   cursor: default;

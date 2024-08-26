@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Title } from "./Styles";
+import { ScrollableContent, Title } from "./Styles";
 import { PopupContainer } from "./PopupContainer";
 import axios from "axios";
 import { SessionCurrent } from "./SessionCurrent";
@@ -29,10 +29,10 @@ export function FeedList() {
 
     useEffect(() => {
         if (sessionUser) {
-            if(location.pathname=="/feed/scrap"){
+            if(location.pathname=="/mypage/scrap"){
                 GetScrapList();
             }
-            if(location.pathname=="/feed/like"){
+            if(location.pathname=="/mypage/like"){
                 GetLikeList();
             }
         }
@@ -61,13 +61,13 @@ export function FeedList() {
     }
     
     return <>
-        <PopupContainer>
-            <Title style={{padding: "20px"}}>Feed {location.pathname=="/feed/scrap"? "Scrap": "Like"}</Title>
+        <ScrollableContent height="100%">
+            <Title style={{padding: "20px"}}>Feed {location.pathname=="/mypage/scrap"? "Scrap": "Like"}</Title>
             <Container>{
                 feedList && feedList.map((data, index)=>(
                     <Img key={index} src={data.feed.image} onClick={()=>{navigate("/feed/"+data.feed.id)}}/>
                 ))
             }</Container>
-        </PopupContainer>
+        </ScrollableContent>
     </>
 }

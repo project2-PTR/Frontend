@@ -1,32 +1,25 @@
 import styled from "styled-components";
 import { FollowerTooltip, FollowingTooltip, LikeTooltip, ScrollableContent, Title, Tooltip } from "./Styles";
+import { PopupContainer } from "./PopupContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import heart from "./../img/favorite.png";
-import redheart from "./../img/favoriteCheck.png";
-import bookmark from "./../img/bookmarkFeed.png";
-import blackbookmark from "./../img/bookmarkFeedCheck.png";
-import closeBtn from "./../img/x.png";
+import heart from "./../img/heart.png";
+import redheart from "./../img/redheart.png";
+import bookmark from "./../img/bookmark.png";
+import blackbookmark from "./../img/blackbookmark.png";
+import closeBtn from "./../img/closeBtn.png";
 import { SessionCurrent } from "./SessionCurrent";
 
 const Container = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 30px;
-    gap: 30px;
+    gap: 10px;
 `
 
 const Contents = styled.div`
-    border: 1px solid white;
-`
-
-const CommentBox = styled.div`
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+    border: 1px solid black;
 `
 
 const Flex = styled.div`
@@ -44,44 +37,18 @@ const ProfileImg = styled.img`
 
 const Input = styled.input`
     width: 100%;
-    padding: 10px 20px;
-    background-color: black;
-    color: white;
-    border: 1px solid white;
+    padding: 3px;
 `
 
 const CommentBtn = styled.div`
-    background-color: white;
-    color: black;
-    padding: 10px;
-    width: 150px;
-    text-align: center;
-    /* border: 1px solid #333; */
-    /* border-radius: 3px; */
-    cursor: pointer;
-    margin-left: 20px;
-`
-
-const InputComment = styled.input`
-    width: 100%;
-    padding: 5px 20px;
-    background-color: black;
+    background-color: #25559B;
     color: white;
-    border: 1px solid white;
-    margin: 10px 0;
-`
-
-const CommentBtnComment = styled.div`
-    background-color: white;
-    color: black;
-    padding: 5px;
-    width: 150px;
+    padding: 3px;
+    width: 100px;
     text-align: center;
-    margin: 10px 0;
-    /* border: 1px solid #333; */
+    border: 1px solid #333;
     /* border-radius: 3px; */
     cursor: pointer;
-    margin-left: 20px;
 `
 
 const FollowerBtn = styled.div`
@@ -333,10 +300,11 @@ export function Feed() {
     }
 
     return <>
-        {feed && follower && following? <div style={{padding:"40px 50px"}}>
+        {feed && follower && following? <PopupContainer>
+            <Title style={{padding: "20px"}}>Feed</Title>
             <Container>
                 <Contents>
-                    <Flex style={{padding: "20px 30px", justifyContent:"space-between"}}>
+                    <Flex style={{padding: "5px 15px", justifyContent:"space-between"}}>
                         <Flex>
                             <ProfileImg src={feed.user.profileImg} onClick={()=>{navigate("/feed/user/"+feed.user.userId)}}/>
                             <div>
@@ -358,7 +326,8 @@ export function Feed() {
                     </Flex>
 
                     <img src={feed.image} style={{width: "100%"}}/>
-                    <div style={{padding: "20px 30px"}}>
+                    <Flex style={{justifyContent: "space-between", padding: "5px 15px"}}>
+                        <div>{feed.text}</div>
                         <Flex>
                             <img src={like? redheart: heart} style={{height: "25px", cursor:"pointer"}} onClick={()=>{LikeClick()}}/>
                             <Tooltip tooltipContents={LikeTooltip(likeList, ()=>{setFollowChange(!followChange)})} bottom="true">
@@ -366,27 +335,22 @@ export function Feed() {
                             </Tooltip>
                             <img src={scrap? blackbookmark: bookmark} style={{height: "25px", cursor:"pointer"}} onClick={()=>{ScrapClick()}}/>
                         </Flex>
-                        <div style={{marginTop: "20px"}}>{feed.text}</div>
-                    </div>
+                    </Flex>
                 </Contents>
-                <div>
-                    <CommentBox>
-                        <div>
-                            <div style={{padding:"20px 0", fontSize:"35px"}}>Comments {commentList? commentList.length: ""}</div>
-                            <ScrollableContent width="100%" height="600px">
-                                {commentList && commentList.map((comment, index)=> comment.feedComment==null?(
-                                    <FeedCommentBar key={comment.id} comment={comment} func={() => setCommentPost(!commentPost)}/>
-                                ):null)}
-                            </ScrollableContent>
-                        </div>
-                        <Flex style={{gap: "0"}}>
-                            <Input type="text" placeholder="Enter Comment" onChange={(e)=> {commentText = e.target.value}}/>
-                            <CommentBtn onClick={()=>{CommentPost()}}>SEND</CommentBtn>
-                        </Flex>
-                    </CommentBox>
-                </div>
+                <Contents>
+                    <div style={{padding:"10px 20px"}}>댓글 {commentList? commentList.length+"개": "없음"}</div>
+                    <ScrollableContent width="90%" height="400px">
+                        {commentList && commentList.map((comment, index)=> comment.feedComment==null?(
+                            <FeedCommentBar key={index} comment={comment} func={() => setCommentPost(!commentPost)}/>
+                        ):null)}
+                    </ScrollableContent>
+                    <Flex style={{gap: "0", padding: "10px"}}>
+                        <Input type="text" placeholder="댓글 내용을 입력하시오." onChange={(e)=> {commentText = e.target.value}}/>
+                        <CommentBtn onClick={()=>{CommentPost()}}>댓글달기</CommentBtn>
+                    </Flex>
+                </Contents>
             </Container>
-        </div>: <div/>}
+        </PopupContainer>: <div/>}
     </>
 }
 
@@ -395,8 +359,8 @@ const FeedCommentContainer = styled.div`
     border-radius: 5px;
     /* padding: 10px; */
     width: 100%;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 `
 
 const Img = styled.img`
@@ -415,7 +379,6 @@ export function FeedCommentBar({comment, func}){
     const [commentLook, setCommentLook] = useState(false);
     const [commentWriteLook, setCommentWriteLook] = useState(false);
     const [commentPost, setCommentPost] = useState(false);
-    const [commentDelete, setCommentDelete] = useState(false);
 
     const commentInputRef = useRef(null);
     
@@ -451,7 +414,7 @@ export function FeedCommentBar({comment, func}){
         try{
             const response = await axios.post("http://localhost:8080/api/getFeedCommentByFeedComment", {id:comment.id});
             const data = response.data;
-            console.log("GetFeedCommentList2", data);
+            // console.log("GetFeedCommentList", data);
             setCommentList(data)
         }catch(error){
             console.log("요청에 실패했습니다.", error);
@@ -519,21 +482,9 @@ export function FeedCommentBar({comment, func}){
             console.log("요청에 실패했습니다.", error);
         }
     }
-
-    async function CommentDelete(){
-        try{
-            const response = await axios.post("http://localhost:8080/api/deleteFeedComment", {id: comment.id});
-            const data = response.data;
-            console.log("CommentDelete", data);
-            setCommentDelete(true);
-            func();
-        }catch(error){
-            console.log("요청에 실패했습니다.", error);
-        }
-    }
     
     return <>
-        {commentDelete? <div/>: <FeedCommentContainer>
+        <FeedCommentContainer>
             <Flex style={{alignItems:"start"}}>
                 <Img src={comment.user.profileImg} onClick={()=>{navigate("/feed/user/"+comment.user.userId)}}/>
                 <div style={{width: "100%"}}>
@@ -547,26 +498,26 @@ export function FeedCommentBar({comment, func}){
                             <Flex>
                                 <Flex style={{gap: "5px"}}>
                                     <img src={like? redheart: heart} style={{height: "15px", cursor:"pointer"}} onClick={()=>{LikeClick()}}/>
-                                    <div style={{fontSize: "14px"}}>{likeList? likeList: "0"}</div>
+                                    <div style={{cursor:"pointer"}}>{likeList? likeList: "0"}</div>
                                 </Flex>
-                                <div style={{fontSize: "12px", color: "gray", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentWriteLook(!commentWriteLook)}}>Reply</div>
+                                <div style={{fontSize: "12px", color: "gray", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentWriteLook(!commentWriteLook)}}>답글달기</div>
                                 {commentList? commentList.length!=0? 
-                                    (<div style={{fontSize: "12px", color: "#561689", fontWeight:"bold", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentLook(!commentLook)}}>
-                                    {commentLook? "↑Close": "↓Replies("+commentList.length+"개)"}</div>): null: null
+                                    (<div style={{fontSize: "12px", color: "#25559B", fontWeight:"bold", marginTop: "5px", cursor:"pointer"}} onClick={()=>{setCommentLook(!commentLook)}}>
+                                    {commentLook? "↑답글닫기": "↓답글보기("+commentList.length+"개)"}</div>): null: null
                                 }
                             </Flex>
                         </div>
-                        {comment.user.userId==sessionUser? <img src={closeBtn} style={{height: "25px", cursor:"pointer", marginRight:"20px"}} onClick={()=>{CommentDelete()}}/>: null}
+                        {comment.user.userId==sessionUser? <img src={closeBtn} style={{height: "15px", cursor:"pointer"}} onClick={()=>{LikeClick()}}/>: null}
                     </Flex>
                     {commentWriteLook? <Flex ref={commentInputRef} style={{gap: "0"}}>
-                        <InputComment type="text" placeholder="Enter Comment" onChange={(e)=> {commentText = e.target.value}}/>
-                        <CommentBtnComment onClick={()=>{CommentPost()}}>SEND</CommentBtnComment>
+                        <Input type="text" placeholder="답글 내용을 입력하시오." onChange={(e)=> {commentText = e.target.value}}/>
+                        <CommentBtn onClick={()=>{CommentPost()}}>답글달기</CommentBtn>
                     </Flex>: null}
                     {commentLook? commentList.map((comment, index)=> (
-                        <FeedCommentBar key={comment.id} comment={comment} func={func}/>
+                        <FeedCommentBar key={index} comment={comment} func={func}/>
                     )): null}
                 </div>
             </Flex>
-        </FeedCommentContainer>}
+        </FeedCommentContainer>
     </>
 }
