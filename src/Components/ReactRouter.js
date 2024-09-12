@@ -24,6 +24,7 @@ import { FeedSearch } from "./FeedSearch";
 import { FeedUserSearch } from "./FeedUserSearch";
 import { MyPage } from "./MyPage";
 import { MyPageEdit } from "./MyPageEdit";
+import { ProfileEdit } from "./ProfileEdit";
 
 export function ReactRouter() {
   return <>
@@ -37,6 +38,7 @@ export function ReactRouter() {
         <Route path='/logout' element={<Logout/>}></Route>
         <Route path='/mypage' element={<MyPage/>}>
           <Route path='edit' element={<MyPageEdit/>}></Route>
+          <Route path='profile' element={<ProfileEdit/>}></Route>
           <Route path='scrap' element={<FeedList/>}></Route>
           <Route path='like' element={<FeedList/>}></Route>
         </Route>

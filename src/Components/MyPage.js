@@ -48,6 +48,7 @@ export function MyPage(){
                 <Text style={{marginBottom:"40px"}}>마이페이지</Text>
                 <StyledLink to='/mypage/edit' $bold={location.pathname=="/mypage/edit"?true:false}>회원 정보 수정</StyledLink><br/>
                 <Text size="30px">피드 정보</Text>
+                <StyledLinkDetail to='/mypage/profile' $bold={location.pathname=="/mypage/profile"?true:false}>- 프로필 수정</StyledLinkDetail><br/>
                 <StyledLinkDetail to='/mypage/scrap' $bold={location.pathname=="/mypage/scrap"?true:false}>- 스크랩한 피드</StyledLinkDetail><br/>
                 <StyledLinkDetail to='/mypage/like' $bold={location.pathname=="/mypage/like"?true:false}>- 좋아요한 피드</StyledLinkDetail><br/>
             </MypageLeft>
